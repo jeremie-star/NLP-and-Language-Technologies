@@ -114,6 +114,9 @@ The experiments were developed primarily in **Google Colab** using Python and co
 * PyTorch
 * Hugging Face Transformers
 
+Research focus:
+How effectively can sequential modelling approaches be used to address a real-world NLP problem, and what evidence supports the strengths and limitations of the selected approaches?
+
 
 
 ## Team
