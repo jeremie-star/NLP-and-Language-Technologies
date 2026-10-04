@@ -1,68 +1,125 @@
-# Research-Informed Sequential Models for NLP: Gender-Based Violence Tweet Classification
+# GBV Tweet Classification Using Sequential and Text Models
 
-**Formative Assignment 2 — Group 8**
-Course: NLP and Language Technologies
+This project investigates how different machine learning and neural language modelling approaches can classify tweets related to **Gender-Based Violence (GBV)**. "https://zindi.world/competitions/gender-based-violence-tweet-classification-challenge-2025"
 
-> ⚠️ **Content warning:** This project works with tweets that describe sexual, physical, emotional and economic violence. The data, notebooks and example predictions contain distressing language.
+The study compares traditional text-classification baselines with neural sequential models to understand how different representations of language perform on a real-world social media classification task.
 
----
+## Problem
 
-## Overview
+The goal is to automatically classify GBV-related tweets into five categories:
 
-This project studies **five-class classification of gender-based violence (GBV) tweets** and asks a focused research question:
+* **Sexual Violence**
+* **Physical Violence**
+* **Emotional Violence**
+* **Economic Violence**
+* **Harmful Traditional Practices**
 
-> **How effectively can different sequential and text-modelling approaches classify GBV tweets — and do more complex sequential models add anything beyond simple lexical cues?**
-
-We compare two order-blind lexical baselines against three neural sequential models, each chosen for a different inductive bias:
-
-| ID  | Approach                          | What it captures                             |
-| --- | --------------------------------- | -------------------------------------------- |
-| M0  | Majority-class & keyword rules    | Zero-learning reference points               |
-| M1  | Word TF-IDF + Logistic Regression | Bag-of-ngrams (order-blind control)          |
-| M2  | Character TF-IDF + Linear SVM     | Sub-word robustness without neural machinery |
-| M3  | TextCNN                           | Local n-gram patterns                        |
-| M4  | BiLSTM                            | Bidirectional sequential dependency          |
-| M5  | BERTweet (fine-tuned)             | Pretrained contextual self-attention         |
+This can support large-scale analysis of GBV-related discussions on social media, where manually reviewing large numbers of posts is difficult.
 
 ## Dataset
 
-- **Source:** [Zindi — Gender-Based Violence Tweet Classification Challenge](https://zindi.africa/competitions/gender-based-violence-tweet-classification-challenge)
-- **Size:** 39,650 English tweets, collected from Twitter via _Twint_
-- **Labels (5 classes):** `sexual_violence`, `physical_violence`, `emotional_violence`, `economic_violence`, `harmful_traditional_practice`
-- **Imbalance:** ~82.3% of tweets are the majority class; the full imbalance ratio is **≈174:1** (rarest class has only 188 tweets total, ~28 in the test split)
+We use the **Gender-Based Violence Tweet Classification Challenge 2025** dataset.
 
-## Repository structure
+The dataset contains **39,650 labelled tweets** across the five GBV categories. The data is highly imbalanced, with approximately **82.3% of tweets belonging to the majority class** and the smallest class containing only 188 examples.
 
-```
-.
+Our experiments use a shared, stratified and duplicate-aware:
+
+**70% training / 15% validation / 15% test split**
+
+Because of the class imbalance, **macro-F1** is used as our primary evaluation metric, alongside accuracy and other supporting metrics.
+
+## Models
+
+We investigate five different approaches:
+
+| Model   | Approach                          |
+| ------- | --------------------------------- |
+| Model 1 | Word TF-IDF + Logistic Regression |
+| Model 2 | Character TF-IDF + Linear SVM     |
+| Model 3 | TextCNN                           |
+| Model 4 | BiLSTM                            |
+| Model 5 | BERTweet                          |
+
+The first two models provide strong traditional baselines, while TextCNN, BiLSTM and BERTweet allow us to investigate neural approaches to text and sequential modelling.
+
+## Key Findings
+
+The dataset contains strong lexical patterns, meaning that relatively simple models can already achieve very high performance.
+
+The two completed traditional baselines achieved:
+
+* **Word TF-IDF + Logistic Regression:** 0.9838 test macro-F1
+* **Character TF-IDF + Linear SVM:** 0.9929 test macro-F1
+
+Five-fold cross-validation showed that the difference between the two traditional models was relatively small compared with fold-to-fold variation.
+
+The neural experiments further investigate local patterns, sequential dependencies, contextual representations, and performance under limited training data.
+
+## Project Structure
+
+```text
+gbv_tweet_project/
+│
+├── data/
+│   └── splits/
+│       ├── train.csv
+│       ├── val.csv
+│       ├── test.csv
+│       └── low_resource_protocol.json
+│
 ├── notebooks/
-│   ├── EDA and Baselines.ipynb                       # M0–M2: EDA, split, lexical baselines
-│   └── GBV_Tweet_Classification_—_Model_5_Transformer_(BERTweet).ipynb   # M5
-├── results/
-│   ├── results_model5_bertweet.csv                   # BERTweet full-data metrics
-│   ├── results_model5_low_resource.csv               # BERTweet low-resource runs
-│   └── test_predictions_m5_bertweet.csv              # Per-tweet predictions (for error analysis)
+│   ├── model_1_logistic_regression/
+│   ├── model_2_linear_svm/
+│   ├── model_3_textcnn/
+│   ├── model_4_bilstm/
+│   └── model_5_bertweet/
+│
 ├── figures/
-│   └── 08_learning_curves.png
-├── requirements.txt
-├── .gitignore
+│
+│   ├── learning_curves/
+│  
+│  
+│
+├── results/
+│   ├── model_results/
+│   └── predictions/
+│
 └── README.md
 ```
 
-## Setup and reproduction
+## Experimental Setup
 
-```bash
-# 1. Create and activate a virtual environment
-python3 -m venv .venv
-source .venv/bin/activate          # Windows: .venv\Scripts\activate
+The experiments use a shared dataset split and consistent evaluation protocol.
 
-# 2. Install dependencies
-pip install -r requirements.txt
+For the neural models, we investigate:
 
-# 3. Download the Zindi dataset and place the split files under data/
+* class-weighted training
+* validation-based model selection
+* learning curves
+* hyperparameter tuning
+* confusion matrices
+* error analysis
+* low-resource training
 
-# 4. Launch Jupyter and run the notebooks in order
-jupyter notebook
-```
+BERTweet is used as a Twitter-specific pretrained Transformer model and is evaluated using subword tokenisation, class-weighted loss, learning-rate tuning and early stopping.
 
-Run `notebooks/EDA and Baselines.ipynb` first (it produces the EDA, the stratified 70/15/15 split and the M0–M2 baselines), then the BERTweet notebook. BERTweet training benefits from a GPU (e.g. Google Colab); the lexical baselines run on CPU.
+## Reproducibility
+
+The experiments were developed primarily in **Google Colab** using Python and common machine learning libraries including:
+
+* Python
+* pandas
+* NumPy
+* scikit-learn
+* PyTorch
+* Hugging Face Transformers
+
+
+
+## Team
+
+This project was completed collaboratively as part of the **ALU Software Engineering NLP coursework**.
+
+Each team member contributed to different parts of the dataset investigation, modelling, experimentation, evaluation, and analysis.
+
+---
