@@ -1,0 +1,2 @@
+model,split,config,macro_f1,balanced_acc,weighted_f1,accuracy,f1_sexual,f1_physical,f1_emotional,f1_economic,f1_harmful trad.,note
+M5 BERTweet,test,"full data, lr=2e-05, max_length=80",0.9865396658467012,0.9837975450088237,0.9988190944761329,0.9988225399495374,0.999285349668198,0.9994372537985369,0.9846153846153847,0.9850746268656716,0.9642857142857143,BERTweet; class-weighted loss; selected on validation macro-F1

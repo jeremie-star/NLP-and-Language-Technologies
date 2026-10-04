@@ -1,0 +1,11 @@
+transformers
+datasets
+accelerate
+scikit-learn
+emoji==0.6.0
+pandas
+numpy
+matplotlib
+seaborn
+torch
+jupyter
